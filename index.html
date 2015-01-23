@@ -20,8 +20,8 @@ p {
 
 .axis path, .axis line {
   fill: none;
-  stroke: #000;
-  stroke-width: 2px;
+  stroke: #ccc;
+  stroke-width: 1px;
   shape-rendering: crispEdges;
 }
 
@@ -41,7 +41,8 @@ button {
 
 <script>
 
-chart("data.csv", "pink");
+// chart("data.csv", "pink");
+chart("output.csv", "antistatique");
 
 var datearray = [];
 var colorrange = [];
@@ -53,18 +54,36 @@ if (color == "blue") {
   colorrange = ["#045A8D", "#2B8CBE", "#74A9CF", "#A6BDDB", "#D0D1E6", "#F1EEF6"];
 }
 else if (color == "pink") {
-  colorrange = ["#980043", "#DD1C77", "#DF65B0", "#C994C7", "#D4B9DA", "#F1EEF6"];
+  colorrange = [
+    "#980043", "#DD1C77", "#DF65B0", "#C994C7", "#D4B9DA", "#F1EEF6",
+    "#980043", "#DD1C77", "#DF65B0", "#C994C7", "#D4B9DA", "#F1EEF6", "#980043"
+  ];
 }
 else if (color == "orange") {
   colorrange = ["#B30000", "#E34A33", "#FC8D59", "#FDBB84", "#FDD49E", "#FEF0D9"];
 }
+else if (color == "antistatique") {
+  colorrange = [
+    "#EF2678",
+    "#D42270",
+    "#BA1E68",
+    "#9F1961",
+    "#851559",
+    "#6A1151",
+    "#500D49",
+    "#350842",
+    "#1B043A",
+    "#000032"
+    ];
+}
+
 strokecolor = colorrange[0];
 
-var format = d3.time.format("%m/%d/%y");
+var format = d3.time.format("%d.%m.%Y"); // 14.04.2014
 
 var margin = {top: 20, right: 40, bottom: 30, left: 30};
 var width = document.body.clientWidth - margin.left - margin.right;
-var height = 400 - margin.top - margin.bottom;
+var height = 500 - margin.top - margin.bottom;
 
 var tooltip = d3.select("body")
     .append("div")
@@ -87,7 +106,7 @@ var z = d3.scale.ordinal()
 var xAxis = d3.svg.axis()
     .scale(x)
     .orient("bottom")
-    .ticks(d3.time.weeks);
+    .ticks(d3.time.months);
 
 var yAxis = d3.svg.axis()
     .scale(y);
@@ -98,15 +117,15 @@ var yAxisr = d3.svg.axis()
 var stack = d3.layout.stack()
     .offset("silhouette")
     .values(function(d) { return d.values; })
-    .x(function(d) { return d.date; })
-    .y(function(d) { return d.value; });
+    .x(function(d) { return d.Date; })
+    .y(function(d) { return d.Hours; });
 
 var nest = d3.nest()
-    .key(function(d) { return d.key; });
+    .key(function(d) { return d.Task; });
 
 var area = d3.svg.area()
     .interpolate("cardinal")
-    .x(function(d) { return x(d.date); })
+    .x(function(d) { return x(d.Date); })
     .y0(function(d) { return y(d.y0); })
     .y1(function(d) { return y(d.y0 + d.y); });
 
@@ -118,13 +137,13 @@ var svg = d3.select(".chart").append("svg")
 
 var graph = d3.csv(csvpath, function(data) {
   data.forEach(function(d) {
-    d.date = format.parse(d.date);
-    d.value = +d.value;
+    d.Date = format.parse(d.Date);
+    d.Hours = +d.Hours;
   });
 
   var layers = stack(nest.entries(data));
 
-  x.domain(d3.extent(data, function(d) { return d.date; }));
+  x.domain(d3.extent(data, function(d) { return d.Date; }));
   y.domain([0, d3.max(data, function(d) { return d.y0 + d.y; })]);
 
   svg.selectAll(".layer")
@@ -170,13 +189,13 @@ var graph = d3.csv(csvpath, function(data) {
       }
 
       mousedate = datearray.indexOf(invertedx);
-      pro = d.values[mousedate].value;
+      pro = d.values[mousedate].Hours;
 
       d3.select(this)
       .classed("hover", true)
       .attr("stroke", strokecolor)
       .attr("stroke-width", "0.5px"),
-      tooltip.html( "<p>" + d.key + "<br>" + pro + "</p>" ).style("visibility", "visible");
+      tooltip.html( "<p>" + d.Task + "<br>" + pro + "</p>" ).style("visibility", "visible");
 
     })
     .on("mouseout", function(d, i) {
@@ -186,7 +205,7 @@ var graph = d3.csv(csvpath, function(data) {
       .attr("opacity", "1");
       d3.select(this)
       .classed("hover", false)
-      .attr("stroke-width", "0px"), tooltip.html( "<p>" + d.key + "<br>" + pro + "</p>" ).style("visibility", "hidden");
+      .attr("stroke-width", "0px"), tooltip.html( "<p>" + d.Task + "<br>" + pro + "</p>" ).style("visibility", "hidden");
   })
 
   var vertical = d3.select(".chart")
