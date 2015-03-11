@@ -33,7 +33,7 @@ button {
 
 </style>
 <body>
-<script src="http://d3js.org/d3.v2.js"></script>
+<script src="/js/d3.v2.js"></script>
 
 
 <div class="chart">
@@ -41,8 +41,7 @@ button {
 
 <script>
 
-// chart("data.csv", "pink");
-chart("output.csv", "antistatique");
+chart("uploads/{{ hash }}.csv", "antistatique");
 
 var datearray = [];
 var colorrange = [];
