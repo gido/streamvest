@@ -45,7 +45,7 @@ $app->post('/upload', function(Request $request) use ($app) {
         $data = $form->getData();
         $file = $data['file'];
 
-        $hash = substr(md5_file($file->getPathname()), 0, 6);
+        $hash = substr(md5_file($file->getPathname()), 0, 7);
         $output = __DIR__.'/uploads/'.$hash.'.csv';
 
         $app['csv_harvest']->transform($file->getPathname(), $output);
