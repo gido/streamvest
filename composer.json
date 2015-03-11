@@ -2,7 +2,7 @@
     "name": "gido/streamvest",
     "description": "Streamgraph with Harvest data",
     "require": {
-        "php": "~5.5",
+        "php": "~5.5.10",
         "silex/silex": "~1.2",
         "twig/twig": "~1.18",
         "symfony/form": "~2.6",
